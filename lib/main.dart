@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:math_expressions/math_expressions.dart';
 import 'button.dart';
 import 'screen.dart';
 
@@ -33,6 +34,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String answer = '';
   String equation = '';
+  String lastAnswer = '';
 
   final List<String> buttons = [
     'C',
@@ -42,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     '9',
     '8',
     '7',
-    '*',
+    'x',
     '6',
     '5',
     '4',
@@ -57,10 +59,17 @@ class _MyHomePageState extends State<MyHomePage> {
     '=',
   ];
 
-  handleOnPress(label) {
+  void handleOnPress(String label) {
     setState(() {
       equation += label;
     });
+  }
+
+  final Parser p = Parser();
+  final ContextModel cm = ContextModel();
+
+  num doubleWithoutDecimalToInt(double val) {
+    return val % 1 == 0 ? val.toInt() : val;
   }
 
   @override
@@ -72,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Column(children: [
           Screen(answer: answer, equation: equation),
           Flexible(
-            flex: 5,
+            flex: 2,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: GridView.builder(
@@ -80,12 +89,64 @@ class _MyHomePageState extends State<MyHomePage> {
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4),
                   itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Button(
-                          handleOnPress: () => handleOnPress(buttons[index]),
-                          label: buttons[index],
-                        ));
+                    if (index == 0) {
+                      return Button(
+                        handleOnPress: () {
+                          setState(() {
+                            equation = '';
+                            answer = '';
+                          });
+                        },
+                        label: buttons[index],
+                      );
+                    }
+
+                    if (index == 1) {
+                      return Button(
+                        handleOnPress: () {
+                          setState(() {
+                            if (equation.isNotEmpty) {
+                              equation =
+                                  equation.substring(0, equation.length - 1);
+                            }
+                          });
+                        },
+                        label: buttons[index],
+                      );
+                    }
+
+                    if (index == buttons.length - 1) {
+                      return Button(
+                        handleOnPress: () {
+                          setState(() {
+                            String sanitizedEquation =
+                                equation.replaceAll('x', '*');
+                            Expression exp = p.parse(sanitizedEquation);
+                            double eval = exp.evaluate(EvaluationType.REAL, cm);
+
+                            answer = doubleWithoutDecimalToInt(eval).toString();
+                            lastAnswer = answer;
+                          });
+                        },
+                        label: buttons[index],
+                      );
+                    }
+
+                    if (index == buttons.length - 2) {
+                      return Button(
+                        handleOnPress: () {
+                          setState(() {
+                            equation += lastAnswer;
+                          });
+                        },
+                        label: buttons[index],
+                      );
+                    }
+
+                    return Button(
+                      handleOnPress: () => handleOnPress(buttons[index]),
+                      label: buttons[index],
+                    );
                   }),
             ),
           ),

@@ -10,7 +10,7 @@ class Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Flexible(
-      flex: 3,
+      flex: 1,
       child: Container(
         decoration: const BoxDecoration(
             color: Color.fromARGB(255, 211, 211, 211),
