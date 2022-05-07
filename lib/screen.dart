@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Screen extends StatelessWidget {
-  const Screen({Key? key, required this.answer, required this.equation})
+  const Screen({Key? key, required this.equation})
       : super(key: key);
 
-  final String answer;
   final String equation;
 
   @override
@@ -29,25 +28,12 @@ class Screen extends StatelessWidget {
                 child: Container(
                   child: Text(
                     equation,
-                    style: const TextStyle(fontSize: 36),
-                  ),
-                  alignment: Alignment.topLeft,
-                ),
-              ),
-            ),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 20, bottom: 20),
-                child: Container(
-                  child: Text(
-                    answer,
-                    style: const TextStyle(fontSize: 36),
-                    textAlign: TextAlign.left,
+                    style: const TextStyle(fontSize: 52),
                   ),
                   alignment: Alignment.bottomRight,
                 ),
               ),
-            )
+            ),
           ],
         ),
         width: double.infinity,

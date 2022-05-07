@@ -32,7 +32,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String answer = '';
   String equation = '';
   String lastAnswer = '';
 
@@ -79,76 +78,74 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 229, 228, 226),
         body: Column(children: [
-          Screen(answer: answer, equation: equation),
+          Screen(equation: equation),
           Flexible(
             flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                  itemCount: buttons.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4),
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return Button(
-                        handleOnPress: () {
-                          setState(() {
-                            equation = '';
-                            answer = '';
-                          });
-                        },
-                        label: buttons[index],
-                      );
-                    }
-
-                    if (index == 1) {
-                      return Button(
-                        handleOnPress: () {
-                          setState(() {
-                            if (equation.isNotEmpty) {
-                              equation =
-                                  equation.substring(0, equation.length - 1);
-                            }
-                          });
-                        },
-                        label: buttons[index],
-                      );
-                    }
-
-                    if (index == buttons.length - 1) {
-                      return Button(
-                        handleOnPress: () {
-                          setState(() {
-                            String sanitizedEquation =
-                                equation.replaceAll('x', '*');
-                            Expression exp = p.parse(sanitizedEquation);
-                            double eval = exp.evaluate(EvaluationType.REAL, cm);
-
-                            answer = doubleWithoutDecimalToInt(eval).toString();
-                            lastAnswer = answer;
-                          });
-                        },
-                        label: buttons[index],
-                      );
-                    }
-
-                    if (index == buttons.length - 2) {
-                      return Button(
-                        handleOnPress: () {
-                          setState(() {
-                            equation += lastAnswer;
-                          });
-                        },
-                        label: buttons[index],
-                      );
-                    }
-
+            child: GridView.builder(
+                itemCount: buttons.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4),
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == 0) {
                     return Button(
-                      handleOnPress: () => handleOnPress(buttons[index]),
+                      handleOnPress: () {
+                        setState(() {
+                          equation = '';
+                        });
+                      },
                       label: buttons[index],
                     );
-                  }),
-            ),
+                  }
+
+                  if (index == 1) {
+                    return Button(
+                      handleOnPress: () {
+                        setState(() {
+                          if (equation.isNotEmpty) {
+                            equation =
+                                equation.substring(0, equation.length - 1);
+                          }
+                        });
+                      },
+                      label: buttons[index],
+                    );
+                  }
+
+                  if (index == buttons.length - 1) {
+                    return Button(
+                      handleOnPress: () {
+                        setState(() {
+                          String sanitizedEquation =
+                              equation.replaceAll('x', '*');
+                          Expression exp = p.parse(sanitizedEquation);
+                          double eval = exp.evaluate(EvaluationType.REAL, cm);
+
+                          String result =
+                              doubleWithoutDecimalToInt(eval).toString();
+                          lastAnswer = result;
+                          equation = result;
+                        });
+                      },
+                      label: buttons[index],
+                    );
+                  }
+
+                  if (index == buttons.length - 2) {
+                    return Button(
+                      handleOnPress: () {
+                        setState(() {
+                          equation += lastAnswer;
+                        });
+                      },
+                      label: buttons[index],
+                    );
+                  }
+
+                  return Button(
+                    handleOnPress: () => handleOnPress(buttons[index]),
+                    label: buttons[index],
+                  );
+                }),
           ),
         ]),
       ),
